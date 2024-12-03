@@ -1,8 +1,6 @@
 #KJM May/30/2024
 #Haney Lab
 #Growth Curves for experiments - Combined 
-#trying to get single strain output from all combined expts. 
-
 library(gcplyr)
 library(dplyr)
 library(ggplot2)
@@ -24,14 +22,13 @@ H <- read.csv(file = "FinalData/final_datH.csv")
 #I <- read.csv(file = "FinalData/final_datI.csv")#All LB no Ctrl
 J <- read.csv(file = "FinalData/final_datJ.csv")#Batch 1
 
-#Merge all csvs into one list
-
-# Plotting
+# Plotting - If a preview is wanted
 #ggplot(J, 
 #       aes(x = Time, y = Measurements, colour = Growth_Media))+
 #  geom_point()+
 #  facet_wrap(~Growth_Media)
 
+#Merge all csvs into one
 all_dat <- rbind(A, B) %>%
   rbind(C) %>%
   rbind(D) %>%
@@ -41,11 +38,10 @@ all_dat <- rbind(A, B) %>%
   rbind(H) %>%
   rbind(J)
 
-
 #Removing N/As (times that go past 24hrs messes with lubridate fn)
 final_dat_nona <- na.omit(all_dat)
 
-#For loop that standardizes all PA01 into the same Strain Name
+#For loops that standardizes all naming same Strain Name
 for (i in 1:nrow(final_dat_nona)) {
   if (final_dat_nona$Strain_Names[i] == "PAO1" || final_dat_nona$Strain_Names[i] == "PA01") {
     final_dat_nona$Strain_Names[i] <- "PAO1"
@@ -68,6 +64,7 @@ for (i in 1:nrow(final_dat_nona)) {
     final_dat_nona$Strain_Names[i] <- "GacA"
   }
 }
+#This loop is specifically for Batch 2 H103 -> PAO1
 for (i in 1:nrow(final_dat_nona)) {
   if (final_dat_nona$Strain_Names[i] == "PAO1" || final_dat_nona$Strain_Names[i] == "H103") {
     final_dat_nona$Strain_Names[i] <- "PAO1"
@@ -141,6 +138,7 @@ comb_sum_final <- comb_filtered_final %>%
     sd=sd(Measurements)
   )
 comb_sum_final
+
 # Plotting
 
 ggplot(comb_sum_final, 
@@ -160,16 +158,3 @@ ggplot(comb_sum_final,
         panel.background = element_rect(fill = "white"),  # Invert background color
   panel.grid = element_line(colour = "grey")
   )
-
-
-###Tasks
-#remove outliers, average Data -> ppt
-#STANDARDIZE
-
-
-####Code Dump####
-#Takes in all measurements and gives averages as combined by timepoint
-#mean_data <- aggregate(my_sum_final$mean, 
-#          list(my_sum_final$Time), FUN = mean)
-
-  
